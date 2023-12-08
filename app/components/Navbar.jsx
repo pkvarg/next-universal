@@ -1,14 +1,15 @@
-import React from 'react'
-import Link from 'next/link'
+import React from 'react';
+import Link from 'next/link';
 
 const Navbar = () => {
   return (
-    <nav className='flex flex-row gap-4 ml-auto mr-4'>
-      <Link href='/o-nas'>O Nás</Link>
+    <nav className="ml-auto mr-4 flex flex-row gap-4">
+      <Link href="/o-nas">O Nás</Link>
 
-      <Link href='/contact'>Kontakt</Link>
+      <Link href="/contact">Kontakt</Link>
+      <Link href="/login">Login</Link>
     </nav>
-  )
-}
+  );
+};
 
-export default Navbar
+export default Navbar;
