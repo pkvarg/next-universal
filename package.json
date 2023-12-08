@@ -6,13 +6,17 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
+    "@prisma/client": "^5.7.0",
     "axios": "^1.6.2",
     "next": "14.0.3",
     "next-auth": "^4.24.5",
     "nodemailer": "^6.9.7",
+    "pg": "^8.11.3",
+    "prisma": "^5.7.0",
     "react": "^18",
     "react-dom": "^18",
     "react-hot-toast": "^2.4.1"
