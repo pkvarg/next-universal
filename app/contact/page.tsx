@@ -44,7 +44,7 @@ const Contact = () => {
 
       console.log(data);
 
-      if (data.status === 'Success') toast.success('Správa úspešne odoslaná');
+      if (data.message === 'Success') toast.success('Správa úspešne odoslaná');
       // setName('');
       // setEmail('');
       // setPhone('');

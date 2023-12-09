@@ -1,17 +1,29 @@
 import prisma from '@/app/libs/prismadb';
 import { NextResponse } from 'next/server';
+import bcrypt from 'bcrypt';
+import checkUserExists from '@/app/libs/checkUserExists';
 
 export async function POST(req: Request) {
   try {
     const { email, name, password } = await req.json();
 
-    // const hashedPassword = await bcrypt.hash(password, 12)
+    let hashedPassword;
+    // in case Gmail sign in, there is no password
+    if (password) {
+      hashedPassword = await bcrypt.hash(password, 12);
+    }
+
+    const existingUser = await checkUserExists(email);
+
+    if (existingUser) {
+      return NextResponse.json({ message: 'Email already exists!' });
+    }
 
     const user = await prisma.user.create({
       data: {
         email,
         name,
-        password,
+        password: hashedPassword,
       },
     });
 
