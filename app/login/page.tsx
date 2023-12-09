@@ -16,7 +16,15 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [passwordRepeat, setPasswordRepeat] = useState('');
 
+  const [showAllUsers, setShowAllUsers] = useState(false);
+  const [showEditUser, setShowEditUser] = useState(false);
+
+  const [editedId, setEditedId] = useState<number>();
+  const [editedName, setEditedName] = useState('');
+  const [editedEmail, setEditedEmail] = useState('');
+
   const [allUsers, setAllUsers] = useState([]);
+  const [editedUser, setEditedUser] = useState({});
 
   const handleRegister = async (e: any) => {
     e.preventDefault();
@@ -49,36 +57,102 @@ const Login = () => {
   const getAllUsers = async () => {
     const data = await axios.get('/api/register');
     setAllUsers(data?.data.users);
-    console.log(allUsers);
+    setShowAllUsers(true);
+  };
+
+  const editUser = async (userId: number) => {
+    const data = await axios.get(`api/edit/${userId}`);
+    setEditedUser(data.data.user);
+    setEditedId(data.data.user.id);
+    setEditedName(data.data.user.name);
+    setEditedEmail(data.data.user.email);
+    setShowAllUsers(false);
+    setShowEditUser(true);
+  };
+
+  const handleEditUser = async (userId: number) => {
+    const data = await axios.patch(`api/edit/${userId}`, {
+      name: editedName,
+      email: editedEmail,
+    });
+    if (data.status === 200) {
+      setShowEditUser(false);
+      getAllUsers();
+    }
+  };
+
+  const handleDeleteUser = async (userId: number) => {
+    console.log(userId);
+    try {
+      const data = await axios.delete(`api/edit/${userId}`);
+      if (data.data.message === 'Success') {
+        setShowEditUser(false);
+        getAllUsers();
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
     <>
       {status === 'authenticated' ? (
-        <div>
+        <div className="p-4">
           <p>{userName}</p>
           <p>{userEmail}</p>
           <button onClick={getAllUsers} className="my-2 bg-green-400">
             Get All Users
           </button>
-          {allUsers !== undefined &&
+          {showAllUsers &&
+            allUsers !== undefined &&
             allUsers.map(
               (user: {
-                id: string | undefined;
+                id: number;
                 email: string | undefined;
                 name: string | undefined;
               }) => (
                 <div
                   key={user.id}
-                  className="flex w-[30%] flex-row justify-between gap-4 bg-gray-400"
+                  className="flex w-[30%] flex-row justify-between gap-4 bg-gray-400 text-blue-800"
                 >
                   <p>{user.email}</p>
                   <p>{user.name}</p>
+                  <p>{user.id}</p>
+                  <button onClick={() => editUser(user.id)}>Edit</button>
                 </div>
               ),
             )}
+
+          {showEditUser && editedUser && editedId && (
+            <div className="flex w-[30%] flex-row justify-between gap-4 bg-gray-300 text-blue-800">
+              <input
+                type="text"
+                value={editedName}
+                onChange={(e) => setEditedName(e.target.value)}
+              />
+              <input
+                type="text"
+                value={editedEmail}
+                onChange={(e) => setEditedEmail(e.target.value)}
+              />
+
+              <button
+                onClick={() => handleEditUser(editedId)}
+                className="bg-green-500 px-8"
+              >
+                Save
+              </button>
+              <button
+                onClick={() => handleDeleteUser(editedId)}
+                className="bg-red-500 px-8"
+              >
+                Delete
+              </button>
+              <button onClick={() => setShowEditUser(false)}>Cancel</button>
+            </div>
+          )}
           <div
-            className="h-[70px] w-[30%] bg-red-800 text-[45px] text-white hover:cursor-pointer"
+            className="my-2 h-[70px] w-[30%] bg-red-800 text-[45px] text-white hover:cursor-pointer"
             onClick={() => signOut()}
           >
             Sign Out
